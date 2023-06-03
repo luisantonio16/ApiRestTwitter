@@ -1,9 +1,12 @@
 const Usuario = require('../modelos/usuario');
 const bcrypt = require('bcrypt')
+const jwt = require("../servicios/jwt")
+const {paginate} = require('mongoose-paginate-v2')
 
 const pruebaUser = (req,res)=>{
     return res.status(200).send({
-        mensaje:"Probando controlador usuarios"
+        mensaje:"Probando controlador usuarios",
+        usuario: req.usuario
     })
 }
 
@@ -49,7 +52,7 @@ const registrarUsuario = (req, res)=>{
                     status:"Succes",
                     mensaje:"Se agrego correctamente",
                     user
-                  })
+                })
             }).catch(function (error){
                 if(error){
                     return res.status(500).json({
@@ -63,14 +66,137 @@ const registrarUsuario = (req, res)=>{
         if(error){
             return res.status(500).json({
                 status:"Error",
-                mensaje:"Error verificando usuarios"
+                mensaje:"Error verificando usuarios",
+              
+
             })
 
         }
     })       
 }
 
+
+const login =(req, res)=>{
+    //recorrer parametros del body
+    let params = req.body
+
+    //buscar usuario en la base de datos si existe
+    if (!params.email || !params.contraseña) {
+        return res.status(500).json({
+            status:"Error",
+            mensaje:"Falta datos para Enviar."
+        }) 
+    }
+
+     Usuario.findOne({ email: params.email}).exec().then(async function (usuario){
+        if(usuario){
+            //comprobar contraseña
+            let verificar = await bcrypt.compare(params.contraseña, usuario.contraseña);
+
+            if(!verificar){
+                return res.status(404).json({
+                    status:"Error",
+                    mensaje:"No te has identificado correctamente"
+                })
+            }
+
+
+
+            //devolver token
+            const token = jwt.generarToken(usuario);
+
+
+           //devolver datos de usuario
+           return res.status(200).json({
+            status:"Succes",
+            mensaje:"estamos en el login",
+            usuario:{
+                id:usuario._id,
+                nombre:usuario.nombre,
+                usuario: usuario.usuario
+            },
+            token
+            
+          })
+
+        }
+    }).catch(function (error){
+        return res.status(404).json({
+            status:"Error",
+            mensaje:"Error no se encontraron datos"
+        })
+
+    })
+}
+
+const perfilUsuario = (req, res)=>{
+    //Recibir parametros
+     const id = req.params.id;
+
+     //consulta para sacar los datos del usuario
+     Usuario.findById(id).select({contraseña:0, role:0}).exec().then(function (usuario){
+        if(usuario){
+            return res.status(200).json({
+                status:"Succes",
+                mensaje:"Usuario encntrado",
+                Usuarios: usuario
+            })
+
+        }else{
+            return res.status(404).json({
+                status:"error",
+                mensaje:"No se ecnontro usuario"
+            })
+        }
+
+     })
+        
+     
+
+  
+}
+
+const listaUsuario = async (req, res)=>{
+    //recibir parametros por la url
+    let pagina = 1;
+    if(req.params.page){
+        pagina = req.params.page
+    }
+    //convertir la pagina a entero
+    pagina = parseInt(pagina);
+
+    //hacer la paginacion con mongoose pagination
+    const options = {
+        pagina: pagina,
+        limit: 10
+      };
+
+    //hacer la consulta
+    await Usuario.paginate({} ,options, function(error, usuario){
+        if(usuario){
+            return res.status(200).json({
+                status:"Succes",
+                mensaje:"Lista de usuarios",
+                Usuarios: usuario,
+                total: usuario.totalDocs 
+
+            })
+        }
+
+    }).catch(function(error){
+        return res.status(404).json({
+            status:"error",
+            mensaje:"Error al consultar usuarios",
+            error
+        })
+
+    })   
+}
+
 module.exports = {
     pruebaUser,
-    registrarUsuario
+    registrarUsuario,
+    login,
+    perfilUsuario,
+    listaUsuario
 }
