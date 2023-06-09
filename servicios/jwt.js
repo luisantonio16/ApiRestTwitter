@@ -5,21 +5,20 @@ const moment  = require("moment")
 const claveSecreta = "luis_1629"
 
 //crear una fucion para generar tokens
-const generarToken = (usuario)=> {
+const generarToken = (Usuario)=> {
     const payload = {
-        id: usuario._id,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        email: usuario.email,
-        rol: usuario.rol,
-        imagen: usuario.imagen,
-        Usuario: usuario.Usuario,
-        rol: usuario.rol,
+        id: Usuario.id,
+        nombre: Usuario.nombre,
+        apellido: Usuario.apellido,
+        usuario: Usuario.usuario,
+        email: Usuario.email,
+        role: Usuario.role,
+        imagen: Usuario.imagen,
         iat: moment().unix(),
-        exp: moment().add(30, 'days').unix()
+        exp: moment().add(30, 'days').unix(),
 
     }
-    return jwt.encode(payload, secreto);
+    return jwt.encode(payload, claveSecreta);
 
 }
 

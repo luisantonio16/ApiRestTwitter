@@ -1,7 +1,12 @@
 const Usuario = require('../modelos/usuario');
 const bcrypt = require('bcrypt')
 const jwt = require("../servicios/jwt")
-const {paginate} = require('mongoose-paginate-v2')
+const paginate = require('mongoose-paginate-v2')
+const fs = require("fs");
+const path = require('path');
+const seguidoServicios = require("../servicios/seguidoUserId")
+const Siguiendo = require('../modelos/follow');
+const publicacion = require('../modelos/publicacion');
 
 const pruebaUser = (req,res)=>{
     return res.status(200).send({
@@ -14,7 +19,6 @@ const pruebaUser = (req,res)=>{
 const registrarUsuario = (req, res)=>{
     //recoger datos de usuario de la peticion
     let params = req.body
-
     // validar datos
     if(!params.nombre || !params.email || !params.contraseña || !params.usuario){
         return res.status(400).json({
@@ -23,9 +27,6 @@ const registrarUsuario = (req, res)=>{
             
         })
     }
-
-  
-
     //verificar si hay usuarios duplicados
     Usuario.find({
         $or:[
@@ -75,57 +76,51 @@ const registrarUsuario = (req, res)=>{
     })       
 }
 
-
-const login =(req, res)=>{
-    //recorrer parametros del body
-    let params = req.body
+const login = (req, res)=>{
+    let params = req.body;
 
     //buscar usuario en la base de datos si existe
     if (!params.email || !params.contraseña) {
-        return res.status(500).json({
+        return res.status(500).send({
             status:"Error",
-            mensaje:"Falta datos para Enviar."
-        }) 
+           mensaje:"Falta datos para Enviar."
+       }) 
     }
 
-     Usuario.findOne({ email: params.email}).exec().then(async function (usuario){
-        if(usuario){
-            //comprobar contraseña
-            let verificar = await bcrypt.compare(params.contraseña, usuario.contraseña);
-
-            if(!verificar){
-                return res.status(404).json({
-                    status:"Error",
-                    mensaje:"No te has identificado correctamente"
-                })
-            }
-
-
-
-            //devolver token
-            const token = jwt.generarToken(usuario);
-
-
-           //devolver datos de usuario
-           return res.status(200).json({
-            status:"Succes",
-            mensaje:"estamos en el login",
-            usuario:{
-                id:usuario._id,
-                nombre:usuario.nombre,
-                usuario: usuario.usuario
-            },
-            token
-            
-          })
-
+    Usuario.findOne({email:params.email}).exec().then(async function(usuario){
+        if(!usuario){
+            return res.status(404).json({
+                status:"error",
+                mensaje:"Usuario no encontrado"
+            })
         }
-    }).catch(function (error){
-        return res.status(404).json({
-            status:"Error",
-            mensaje:"Error no se encontraron datos"
-        })
 
+        let verificar = await bcrypt.compareSync(params.contraseña, usuario.contraseña);
+
+        if(!verificar){
+            return res.status(404).json({
+                status:"Error",
+                mensaje:"No te has identificado correctamente"
+            })
+        }
+
+         const token = jwt.generarToken(usuario);
+
+        //devolver datos de usuario
+             return res.status(200).json({
+                 status:"Succes",
+                 mensaje:"Usuario Logueado",
+                 usuario,
+                 token
+             })
+
+
+    }).catch(function (error){
+        return res.status(500).json({
+            status:"Error",
+            mensaje:"Error al buscar usuario"
+
+        })
     })
 }
 
@@ -134,12 +129,17 @@ const perfilUsuario = (req, res)=>{
      const id = req.params.id;
 
      //consulta para sacar los datos del usuario
-     Usuario.findById(id).select({contraseña:0, role:0}).exec().then(function (usuario){
+     Usuario.findById(id).select({contraseña:0, role:0, email:0}).exec().then( async function (usuario){
+
+        const seguidosInfo = await seguidoServicios.seguidoresUsuario(req.usuario.id, id);
+
         if(usuario){
             return res.status(200).json({
                 status:"Succes",
                 mensaje:"Usuario encntrado",
-                Usuarios: usuario
+                Usuarios: usuario,
+                seguidos: seguidosInfo.siguiendo,
+                seguidores: seguidosInfo.seguidores
             })
 
         }else{
@@ -164,39 +164,219 @@ const listaUsuario = async (req, res)=>{
     }
     //convertir la pagina a entero
     pagina = parseInt(pagina);
-
-    //hacer la paginacion con mongoose pagination
     const options = {
-        pagina: pagina,
-        limit: 10
+        page: pagina,
+        limit: 5,
+        collation: {
+          locale: 'en',
+        },
       };
 
+
     //hacer la consulta
-    await Usuario.paginate({} ,options, function(error, usuario){
+    await Usuario.paginate({}, options).then(async function(usuario){
         if(usuario){
+
+            const seguidosInfo = await seguidoServicios.seguidoUsuarioId(req.usuario.id);
+
             return res.status(200).json({
                 status:"Succes",
                 mensaje:"Lista de usuarios",
                 Usuarios: usuario,
-                total: usuario.totalDocs 
+                totalUsuarios: usuario.totalDocs,
+                pagina: usuario.page,
+                totalpaginas:usuario.totalPages,
+                seguidos: seguidosInfo.siguiendo,
+                seguidores: seguidosInfo.seguidores
 
             })
         }
-
     }).catch(function(error){
         return res.status(404).json({
             status:"error",
             mensaje:"Error al consultar usuarios",
             error
         })
-
     })   
 }
 
+const udapteUsuarios =(req, res)=>{
+    //recibir parametros por la url
+    let usuarioId = req.usuario;
+    let usuarioActualizar = req.body;
+
+    //eliminamos los campo inecesarios
+    delete usuarioId.exp;
+    delete usuarioId.iat;
+    delete usuarioId.imagen;
+    delete usuarioId.role;
+
+    //comprobamos si el usuario existe
+    Usuario.find({
+        $or:[
+            {email:usuarioActualizar.email.toLowerCase()},
+            {usuario:usuarioActualizar.usuario.toLowerCase()}
+        ]
+    }).exec().then(async function (usuario){
+
+        let usuarioExiste = false
+
+        usuario.forEach(user=>{
+            if(user && user._id != usuarioActualizar.id) usuarioExiste = true;
+        })
+        
+
+       
+        if(usuarioExiste){
+            return res.status(200).send({
+                status:"Succes",
+                mensaje:"El usuario ya existe"     
+            })
+        } 
+
+           //cifrar la contraseña
+        if(usuarioActualizar.contraseña){
+            let pdw = await bcrypt.hash(usuarioActualizar.contraseña, 10);
+            usuarioActualizar.contraseña = pdw;
+        }else{
+            delete usuarioActualizar.contraseña;
+        }
+        
+        //actualizar usuario
+        Usuario.findByIdAndUpdate(usuarioId.id, usuarioActualizar, {new:true}).then(function(uusuario){
+            if(!uusuario) return res.status(404).send({
+                status:"Error",
+                mensaje:"Error Actualizando Usuario"   
+            })
+            return res.status(200).send({
+                status:"Succecs",
+                mensaje:"Actualizo correctamente",
+                usuario:uusuario
+            })
+
+
+        })    
+        
+    }).catch(function (error){
+        if(error){
+            return res.status(500).json({
+                status:"Error",
+                mensaje:"Error verificando usuarios"          
+            })
+        }
+    })      
+
+   
+}
+
+const subirArchivo = (req, res) =>{
+    //recojer el fichro de la imagen y comprobar si existe
+    const archivo = req.file;
+    if(!archivo){
+        return res.status(400).json({
+            status:"Error",
+            mensaje:"No se ha subido ningun archivo",
+        })
+    }
+
+    //recoger el nombre de la imagen
+    const nombre = archivo.originalname;
+    //sacamos la extencion del archivo
+    const nombreSplit = nombre.split("\.");
+
+    const extencion = nombreSplit[1]
+    //comprabamos la extension de la imagen
+    if(extencion != "png" && extencion != "jpg" && extencion != "jpeg" && extencion != "gif"){
+        //borrar archivoo subbido
+        const filepath = req.file.path
+        const fileDelete = fs.unlinkSync(filepath);
+
+        //devolver respuesta
+        return res.status(400).send({
+            status:"Error",
+            mensaje:"Este archivo no se puede subir, intente con otro."
+        })
+    }
+
+
+    //sacams el id del inicio de seccion
+    let id = req.usuario.id
+    //guardamos la imagen en la base de datos
+    Usuario.findOneAndUpdate({_id:id}, { imagen:req.file.filename}, {new:true}).then(function(usuario){
+        
+        if(!usuario){
+            return res.status(500).send({
+                status:"Error",
+                mensaje:"No se pudo actualizar el avatar"
+            })
+        }
+
+        res.status(200).send({
+            status:"Succes",
+            mensaje:"Archivo subido",
+            user: usuario,
+            files: req.file
+        })
+    })
+
+ 
+}
+
+const avatar = (req,res) =>{
+    //sacar el parametro de la url
+    const file = req.params.file;
+
+    //montar un path real de la imagen
+    const filepath = "./archivos/avatars/"+file;
+
+    //comprbar si existe 
+    fs.stat(filepath, (error, existe)=>{
+        if(!existe){
+            res.status(404).send({
+                status:"Error",
+                mensaje:"No se encontro la imagen"
+            })
+        }
+        //deblvemos un file
+        return res.sendFile(path.resolve(filepath))
+    })
+}
+
+const contar = async (req,res)=>{
+    let usuarioId = req.usuario.id;
+
+    if(req.params.id) usuarioId = req.params.id;
+
+    try {
+        const siguiendo = await Siguiendo.count({usuario:usuarioId});
+
+        const seguidores = await Siguiendo.count({seguido:usuarioId});
+
+        const publicaciones = await publicacion.count({usuario:usuarioId});
+
+        res.status(200).send({
+            usuarioId,
+            siguiendo:siguiendo,
+            seguidores:seguidores,
+            publicaciones:publicaciones
+        })
+
+    } catch (error) {
+        res.status(404).send({
+           status:"error",
+           mensaje:"Error en el metodo de contar"
+        })
+        
+    }
+}
 module.exports = {
     pruebaUser,
     registrarUsuario,
-    login,
     perfilUsuario,
-    listaUsuario
+    listaUsuario,
+    udapteUsuarios,
+    login,
+    subirArchivo,
+    avatar, 
+    contar
 }

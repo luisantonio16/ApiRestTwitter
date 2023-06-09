@@ -8,6 +8,7 @@ const usuarioSchema = Schema({
         required: true
     },
     apellido: String,
+    bigrafia:String,
     contraseña:{
         type: String,
         required: true
