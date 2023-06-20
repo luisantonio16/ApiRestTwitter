@@ -129,7 +129,7 @@ const perfilUsuario = (req, res)=>{
      const id = req.params.id;
 
      //consulta para sacar los datos del usuario
-     Usuario.findById(id).select({contraseña:0, role:0, email:0}).exec().then( async function (usuario){
+     Usuario.findById(id).select({contraseña:0, role:0,}).exec().then( async function (usuario){
 
         const seguidosInfo = await seguidoServicios.seguidoresUsuario(req.usuario.id, id);
 
@@ -150,10 +150,6 @@ const perfilUsuario = (req, res)=>{
         }
 
      })
-        
-     
-
-  
 }
 
 const listaUsuario = async (req, res)=>{
