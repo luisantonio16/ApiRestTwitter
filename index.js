@@ -31,9 +31,7 @@ app.use("/api/follow", followRouter)
 app.get("/prueba1", (req, res)=> {
     return res.status(200).json(
         {
-            id:'1',
-            nombre:'Luis',
-            apellido:'salazar'
+          mensage:'La Api esta funcionando'
         }
     )
 })
