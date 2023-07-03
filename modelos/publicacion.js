@@ -10,7 +10,9 @@ const publicacionSchema = Schema({
         type:String,
         require:true
     },
-    archivo:String,
+    archivo:{
+        type: String,
+    },
     fechaCreado:{
         type:Date,
         default:Date.now

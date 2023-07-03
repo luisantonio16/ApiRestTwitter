@@ -8,7 +8,7 @@ const usuarioSchema = Schema({
         required: true
     },
     apellido: String,
-    bigrafia:String,
+    biografia:String,
     contraseña:{
         type: String,
         required: true

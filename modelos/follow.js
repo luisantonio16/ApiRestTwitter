@@ -15,5 +15,5 @@ const followSchema = Schema({
         default:Date.now
     }
 })
-
+followSchema.plugin(mongoosePaginate);
 module.exports = model("follow",followSchema,"follows");

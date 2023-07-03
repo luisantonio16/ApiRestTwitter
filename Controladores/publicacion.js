@@ -98,13 +98,13 @@ const listarPublicacion = (req,res)=>{
        //recoger el id de la publicacion
        const publicacionId = req.params.id;
 
-       let pagina = 1
-       if(req.params.pagina) pagina= req.params.pagina;
+       let page = 1
+       if(req.params.pagina) page = req.params.pagina;
 
        let limit = 5
 
        //hacemos la busqueda
-       Publicacion.paginate({usuario:publicacionId}, { pagina, limit, populate:{path:"usuario", select:"-contraseña -role -email -__v"}}).then((publicacion) => {
+       Publicacion.paginate({usuario:publicacionId}, { page, limit, populate:{path:"usuario", select:"-contraseña -role -email -__v"}}).then((publicacion) => {
             if(publicacion){ 
                 res.status(200).send({
                     status:"Succes",
@@ -203,8 +203,8 @@ const media = (req,res) =>{
 //listado de publicaciones para el Feed
 const listadoFeed = async (req, res)=>{
     //sacar la pagina actual
-    let pagina = 1
-    if(req.params.pagina) pagina= req.params.pagina;
+    let page = 1
+    if(req.params.pagina) page= req.params.pagina;
 
     //numero maximo de paginas
     let limit = 5
@@ -216,11 +216,11 @@ const listadoFeed = async (req, res)=>{
         const siguiendo = await seguidoServicios.seguidoUsuarioId(req.usuario.id);
 
         //hacemos un find de las publicaciones
-       const publicaciones = await Publicacion.paginate({usuario:siguiendo.siguiendo}, { pagina, limit, sort: { fechaCreado: -1 } ,populate:{path:"usuario", select:"-contraseña -role -email -__v"}})
+       const publicaciones = await Publicacion.paginate({usuario:siguiendo.siguiendo}, { page, limit, sort: { fechaCreado: -1 } ,populate:{path:"usuario", select:"-contraseña -role -email -__v"}})
 
        if(publicaciones){
             res.status(200).send({
-                status:"Suuces",
+                status:"Succes",
                 mensaje:"feed de las publicaciones",
                 siguiendo:siguiendo.siguiendo,
                 publicaciones

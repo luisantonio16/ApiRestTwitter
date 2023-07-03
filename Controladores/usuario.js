@@ -154,6 +154,7 @@ const perfilUsuario = (req, res)=>{
 
 const listaUsuario = async (req, res)=>{
     //recibir parametros por la url
+    let id = req.usuario.id;
     let pagina = 1;
     if(req.params.page){
         pagina = req.params.page
@@ -184,7 +185,6 @@ const listaUsuario = async (req, res)=>{
                 totalpaginas:usuario.totalPages,
                 seguidos: seguidosInfo.siguiendo,
                 seguidores: seguidosInfo.seguidores
-
             })
         }
     }).catch(function(error){
@@ -218,11 +218,9 @@ const udapteUsuarios =(req, res)=>{
         let usuarioExiste = false
 
         usuario.forEach(user=>{
-            if(user && user._id != usuarioActualizar.id) usuarioExiste = true;
+            if(user && user._id != usuarioId.id) usuarioExiste = true;
         })
         
-
-       
         if(usuarioExiste){
             return res.status(200).send({
                 status:"Succes",
@@ -239,15 +237,15 @@ const udapteUsuarios =(req, res)=>{
         }
         
         //actualizar usuario
-        Usuario.findByIdAndUpdate(usuarioId.id, usuarioActualizar, {new:true}).then(function(uusuario){
-            if(!uusuario) return res.status(404).send({
+        Usuario.findByIdAndUpdate(usuarioId.id, usuarioActualizar, {new:true}).then(function(usuario){
+            if(!usuario) return res.status(404).send({
                 status:"Error",
                 mensaje:"Error Actualizando Usuario"   
             })
             return res.status(200).send({
                 status:"Succecs",
                 mensaje:"Actualizo correctamente",
-                usuario:uusuario
+                usuario:usuario
             })
 
 
@@ -310,7 +308,7 @@ const subirArchivo = (req, res) =>{
         res.status(200).send({
             status:"Succes",
             mensaje:"Archivo subido",
-            user: usuario,
+            usuario: usuario,
             files: req.file
         })
     })

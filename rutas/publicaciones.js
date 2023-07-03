@@ -25,7 +25,7 @@ router.get("/publicaciones/:id",auth.autenticar, publicacionesControlador.sacarP
 router.delete("/eliminar/:id",auth.autenticar, publicacionesControlador.eliminarPublicacion);
 router.get("/usuario/:id/:pagina?",auth.autenticar, publicacionesControlador.listarPublicacion);
 router.post("/subirarchivo/:id",[auth.autenticar, subirarchivo.single("file0")], publicacionesControlador.subirArchivo);
-router.get("/media/:file",auth.autenticar, publicacionesControlador.media);
+router.get("/media/:file", publicacionesControlador.media);
 router.get("/feed/:pagina?",auth.autenticar, publicacionesControlador.listadoFeed);
 
 

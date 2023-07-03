@@ -3,7 +3,8 @@ const Usuario = require('../modelos/usuario');
 const paginate = require('mongoose-paginate-v2');
 const { populate } = require("../modelos/usuario");
 
-const seguidoServicios = require("../servicios/seguidoUserId")
+const seguidoServicios = require("../servicios/seguidoUserId");
+const usuario = require("../modelos/usuario");
 
 const pruebaFollow = (req,res)=>{
     return res.status(200).send({
@@ -79,7 +80,7 @@ const dejarSeguir = (req, res)=>{
 
 
 //listado de usuario que esta siguiendo 
-const siguiendo = (req, res)=>{
+const siguiendo =async (req, res)=>{
     //conseguir id del usuario identificado
     let userId = req.usuario.id;
     
@@ -90,11 +91,17 @@ const siguiendo = (req, res)=>{
     let page = 1
     if(req.params.page) page = req.params.page;
 
-    //usuario por pagina que quiero mostrar
-    const limit = 5;
+   const limit =5
+      const options = {
+        page: page,
+        limit: 5,
+
+      };
+
+    
 
     //find a los usuarios y usar la paginacion con mongoose
-    Follow.paginate({usuario:userId},{ page, limit, populate:{path: "usuario seguido" , select:"-contraseña"}})
+   await Follow.paginate({usuario:userId}, { page, limit, populate:{path: "seguido" , select:"-contraseña"}})
                                                                                .then(async (usuarios)=>{
 
         let seguidos = await seguidoServicios.seguidoUsuarioId(req.usuario.id);
@@ -102,8 +109,12 @@ const siguiendo = (req, res)=>{
 
         return res.status(200).send({
             status:"Succes",
+            mensaje:"listado de personas que yo sigo",
             seguidos: seguidos.siguiendo,
-            seguidores: seguidos.seguidores
+            seguidores: seguidos.seguidores,
+            ususariosSeguidos:usuarios.docs,
+            usuarios
+            
         })
 
     }).catch((error)=>{
@@ -117,7 +128,7 @@ const siguiendo = (req, res)=>{
 
 
 //listado de usuarios que siguen
-const seguidores = (req, res)=>{
+const seguidores = async(req, res)=>{
       //conseguir id del usuario identificado
       let userId = req.usuario.id;
     
@@ -133,7 +144,7 @@ const seguidores = (req, res)=>{
 
       
         //find a los usuarios y usar la paginacion con mongoose
-         Follow.paginate({seguido:userId},{ page, limit, populate:{path: "usuario seguido" , select:"-contraseña"}})
+        await Follow.paginate({seguido:userId},{ page, limit, populate:{path: "usuario seguido" , select:"-contraseña"}})
             .then(async (usuarios)=>{
 
             let seguidos = await seguidoServicios.seguidoUsuarioId(req.usuario.id);
@@ -141,9 +152,10 @@ const seguidores = (req, res)=>{
 
             return res.status(200).send({
                 status:"Succes",
-                usuario:usuarios,
                 seguidos: seguidos.siguiendo,
-                seguidores: seguidos.seguidores
+                seguidores: seguidos.seguidores,
+                ususariosSeguidos:usuarios.docs,
+                usuarios
             })
 
             }).catch((error)=>{
