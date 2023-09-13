@@ -1,2 +1,2 @@
-node_modules
-ArrancarProyecto.bat
+*.log
+node_modules/
