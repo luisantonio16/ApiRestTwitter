@@ -228,7 +228,7 @@ const udapteUsuarios =(req, res)=>{
             })
         } 
 
-           //cifrar la contraseña
+        //cifrar la contraseña
         if(usuarioActualizar.contraseña){
             let pdw = await bcrypt.hash(usuarioActualizar.contraseña, 10);
             usuarioActualizar.contraseña = pdw;

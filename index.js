@@ -1,8 +1,10 @@
 const {Conexion} = require('./DataBase/Conexion');
 const express = require("express");
 const cors = require("cors");
+require('dotenv').config();
 //Bienvenido
 console.log('Bienvenido al proyecto Node Express MongoDB');
+
 
 //conexion a base de datos
 Conexion();
