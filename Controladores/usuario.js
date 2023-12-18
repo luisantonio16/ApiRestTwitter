@@ -281,7 +281,7 @@ const subirArchivo = (req, res) =>{
     const extencion = nombreSplit[1]
     //comprabamos la extension de la imagen
     if(extencion != "png" && extencion != "jpg" && extencion != "jpeg" && extencion != "gif"){
-        //borrar archivoo subbido
+        //borrar archivo subido
         const filepath = req.file.path
         const fileDelete = fs.unlinkSync(filepath);
 
@@ -321,7 +321,7 @@ const avatar = (req,res) =>{
     const file = req.params.file;
 
     //montar un path real de la imagen
-    const filepath = "./archivos/avatars/"+file;
+    const filepath = "https://github.com/luisantonio16/ApiRestTwitter/archivos/avatars/"+file;
 
     //comprbar si existe 
     fs.stat(filepath, (error, existe)=>{

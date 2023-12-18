@@ -2,6 +2,7 @@
 const jwt = require("jwt-simple");
 const moment = require("moment");
 
+
 //importar clave secreta
 const libjwt = require("../servicios/jwt");
 const clave = libjwt.claveSecreta;
