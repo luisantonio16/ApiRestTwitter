@@ -331,7 +331,7 @@ const avatar = (req,res) =>{
             res.status(404).send({
                 status:"Error",
                 mensaje:"No se encontro la imagen",
-                existe
+                existe:existe
             })
         }
         //deblvemos un file
