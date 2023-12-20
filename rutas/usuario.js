@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
 
 
 
-const subirarchivo = multer({storage})
+const subirarchivo = multer({storage:storage})
 //rutas del controlador usuario
 router.get("/prueba-usuario", auth.autenticar, UsuarioControlador.pruebaUser);
 router.post("/registrar", UsuarioControlador.registrarUsuario);
