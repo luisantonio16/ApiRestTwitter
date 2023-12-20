@@ -7,6 +7,7 @@ const path = require('path');
 const seguidoServicios = require("../servicios/seguidoUserId")
 const Siguiendo = require('../modelos/follow');
 const publicacion = require('../modelos/publicacion');
+const subirFB = require('../firebase/subirArchivoFB.js')
 
 const pruebaUser = (req,res)=>{
     return res.status(200).send({
@@ -296,7 +297,9 @@ const subirArchivo = (req, res) =>{
     //sacams el id del inicio de seccion
     let id = req.usuario.id
     //guardamos la imagen en la base de datos
-    Usuario.findOneAndUpdate({_id:id}, { imagen:req.file.filename}, {new:true}).then(function(usuario){
+    Usuario.findOneAndUpdate({_id:id}, { imagen:req.file.filename}, {new:true}).then(async function(usuario){
+
+        await subirFB(req.filename);
         
         if(!usuario){
             return res.status(500).send({
@@ -321,7 +324,7 @@ const avatar = (req,res) =>{
     const file = req.params.file;
 
     //montar un path real de la imagen
-    const filepath = "https://github.com/luisantonio16/ApiRestTwitter/tree/main/archivos/avatars/"+file;
+    const filepath = "./archivos/avatars/"+file;
 
     //comprbar si existe 
     fs.stat(filepath, (error, existe)=>{
