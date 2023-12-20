@@ -7,7 +7,7 @@ const multer = require("multer")
 //configuramos el multer para subir archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "./achivos/publicaciones")
+        cb(null, "./archivos/publicaciones")
 
     },
     filename: function (req, file, cb) {

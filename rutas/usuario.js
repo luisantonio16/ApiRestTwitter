@@ -8,7 +8,7 @@ const app = express();
 //configuramos el multer para subir archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "./achivos/avatars");
+        cb(null, "./archivos/avatars");
 
     },
     filename: function (req, file, cb) {
@@ -21,6 +21,8 @@ const storage = multer.diskStorage({
 
 const subirarchivo = multer({storage})
 app.use(express.static('archivos'));
+
+
 //rutas del controlador usuario
 router.get("/prueba-usuario", auth.autenticar, UsuarioControlador.pruebaUser);
 router.post("/registrar", UsuarioControlador.registrarUsuario);
