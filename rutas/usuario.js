@@ -3,11 +3,12 @@ const router = express.Router();
 const UsuarioControlador = require("../Controladores/usuario");
 const auth = require("../Midelware/auth")
 const multer = require("multer")
+const getStorage = require()
 
 //configuramos el multer para subir archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "./archivos/avatars/")
+        cb(null, {storage:multer.memoryStorage});
 
     },
     filename: function (req, file, cb) {

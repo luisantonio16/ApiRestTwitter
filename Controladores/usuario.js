@@ -321,7 +321,7 @@ const avatar = (req,res) =>{
     const file = req.params.file;
 
     //montar un path real de la imagen
-    const filepath = "./archivos/avatars/"+file;
+    const filepath = "https://github.com/luisantonio16/ApiRestTwitter/tree/main/archivos/avatars/"+file;
 
     //comprbar si existe 
     fs.stat(filepath, (error, existe)=>{
