@@ -299,7 +299,7 @@ const subirArchivo = (req, res) =>{
     //guardamos la imagen en la base de datos
     Usuario.findOneAndUpdate({_id:id}, { imagen:req.file.filename}, {new:true}).then(async function(usuario){
 
-        await subirFB(req.filename);
+
         
         if(!usuario){
             return res.status(500).send({

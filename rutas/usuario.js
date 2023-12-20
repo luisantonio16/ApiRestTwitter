@@ -8,7 +8,7 @@ const getStorage = require()
 //configuramos el multer para subir archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, {storage:multer.memoryStorage});
+        cb(null, "./achivos/avatars");
 
     },
     filename: function (req, file, cb) {
@@ -16,6 +16,7 @@ const storage = multer.diskStorage({
 
     }
 })
+
 
 
 const subirarchivo = multer({storage})
