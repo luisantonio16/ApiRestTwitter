@@ -7,7 +7,6 @@ const path = require('path');
 const seguidoServicios = require("../servicios/seguidoUserId")
 const Siguiendo = require('../modelos/follow');
 const publicacion = require('../modelos/publicacion');
-const subirFB = require('../firebase/subirArchivoFB.js')
 
 const pruebaUser = (req,res)=>{
     return res.status(200).send({

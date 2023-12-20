@@ -3,7 +3,7 @@ const router = express.Router();
 const UsuarioControlador = require("../Controladores/usuario");
 const auth = require("../Midelware/auth")
 const multer = require("multer")
-const getStorage = require()
+
 
 //configuramos el multer para subir archivos
 const storage = multer.diskStorage({
