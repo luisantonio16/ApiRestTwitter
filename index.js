@@ -21,6 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 
+
 //cargar rutas
 const userRouter = require("./rutas/usuario")
 const publicacionRouter = require("./rutas/publicaciones")
