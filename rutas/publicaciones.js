@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
     }
 })
 
-const subirarchivo = multer({storage:storage})
+const subirarchivo = multer({storage})
 
 
 router.get("/prueba-publicacion", publicacionesControlador.pruebaPublicacion);
