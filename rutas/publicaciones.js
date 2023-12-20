@@ -7,7 +7,7 @@ const multer = require("multer")
 //configuramos el multer para subir archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "https://github.com/luisantonio16/ApiRestTwitter/archivos/publicaciones/")
+        cb(null, "./achivos/publicaciones")
 
     },
     filename: function (req, file, cb) {

@@ -27,7 +27,7 @@ router.post("/login", UsuarioControlador.login);
 router.get("/perfil/:id", auth.autenticar, UsuarioControlador.perfilUsuario);
 router.get("/lista/:page?", auth.autenticar, UsuarioControlador.listaUsuario);
 router.put("/actualizar", auth.autenticar, UsuarioControlador.udapteUsuarios);
-router.post("/subirarchivo",[auth.autenticar, subirarchivo.single("file0")],  UsuarioControlador.subirArchivo);
+router.post("/subirarchivo",[auth.autenticar, subirarchivo.single("file")],  UsuarioControlador.subirArchivo);
 router.get("/avatar/:file",   UsuarioControlador.avatar);
 router.get("/contar/:id?", auth.autenticar, UsuarioControlador.contar);
 
