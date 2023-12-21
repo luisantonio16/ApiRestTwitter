@@ -16,7 +16,8 @@ const storage = multer.diskStorage({
     }
 })
 
-const subirarchivo = multer({storage})
+const subirarchivo = multer({storage});
+app.use(express.static('archivos'));
 
 
 router.get("/prueba-publicacion", publicacionesControlador.pruebaPublicacion);
