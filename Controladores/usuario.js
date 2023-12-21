@@ -266,9 +266,10 @@ const udapteUsuarios =(req, res)=>{
 }
 
 const subirArchivo = (req, res) =>{
+
     //recojer el fichro de la imagen y comprobar si existe
-    const archivo = req.file;
-    if(!archivo){
+    const file = req.file;
+    if(!file){
         return res.status(400).json({
             status:"Error",
             mensaje:"No se ha subido ningun archivo",
@@ -278,19 +279,19 @@ const subirArchivo = (req, res) =>{
     //recoger el nombre de la imagen
     //const nombre = archivo.originalname;
     //sacamos la extencion del archivo
-    const fileName = 'Avatar' + '--' + archivo.originalname;
+    const fileName = 'Avatar' + '--' + file.originalname;
     const fileUpload = bucket.file(fileName);
 
     // Subir la imagen a Firebase Storage
     const stream = fileUpload.createWriteStream({
       metadata: {
-        contentType: archivo.mimetype,
+        contentType: file.mimetype,
       },
     });
 
     stream.on('error', (err) => {
         console.error('Error al subir la imagen a Firebase Storage:', err);
-        res.status(500).send('Error al subir la imagen.');
+        res.status(405).send('Error al subir la imagen.');
       });
 
     //comprabamos la extension de la imagen
