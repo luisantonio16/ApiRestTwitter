@@ -333,7 +333,7 @@ const subirArchivo = (req, res) =>{
   
       });
   
-      stream.end(file.buffer);
+      stream.end(archivo.buffer);
 
 }
 
