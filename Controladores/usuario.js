@@ -315,7 +315,7 @@ const subirArchivo = (req, res) =>{
 
         let id = req.usuario.id
         //guardamos la imagen en la base de datos
-        Usuario.findOneAndUpdate({_id:id}, { imagen:publicUrl}, {new:true}).then(async function(usuario){
+        Usuario.findOneAndUpdate({_id:id}, {imagen:publicUrl}, {new:true}).then(async function(usuario){
             if(!usuario){
                 return res.status(500).send({
                     status:"Error",
@@ -331,9 +331,6 @@ const subirArchivo = (req, res) =>{
             })
         })
   
-        // Guardar la URL en MongoDB
-  
-        res.status(200).send(`Imagen subida exitosamente. URL: ${publicUrl}`);
       });
   
       stream.end(file.buffer);
