@@ -8,7 +8,7 @@ const app = express();
 //configuramos el multer para subir archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "./archivos/avatars");
+        cb(null, "https://github.com/luisantonio16/ApiRestTwitter/tree/main/archivos/avatars");
 
     },
     filename: function (req, file, cb) {
