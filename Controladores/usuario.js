@@ -278,7 +278,7 @@ const subirArchivo = (req, res) =>{
     //recoger el nombre de la imagen
     //const nombre = archivo.originalname;
     //sacamos la extencion del archivo
-    const fileName = 'Avatar' + '-' + archivo.originalname;
+    const fileName = 'Avatar' + '--' + archivo.originalname;
     const fileUpload = bucket.file(fileName);
 
     // Subir la imagen a Firebase Storage
