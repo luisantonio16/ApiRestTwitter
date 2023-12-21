@@ -284,7 +284,7 @@ const subirArchivo = (req, res) =>{
     // Subir la imagen a Firebase Storage
     const stream = fileUpload.createWriteStream({
       metadata: {
-        contentType: file.mimetype,
+        contentType: archivo.mimetype,
       },
     });
 
