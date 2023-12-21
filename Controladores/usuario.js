@@ -316,7 +316,7 @@ const subirArchivo = (req, res) =>{
 
         let id = req.usuario.id
         //guardamos la imagen en la base de datos
-        await  Usuario.findOneAndUpdate({_id:id}, {imagen:req.file.filename}, {new:true}).then(async function(usuario){
+        await  Usuario.findOneAndUpdate({_id:id}, {imagen:publicUrl}, {new:true}).then(async function(usuario){
             if(!usuario){
                 return res.status(500).send({
                     status:"Error",
@@ -335,7 +335,7 @@ const subirArchivo = (req, res) =>{
   
       });
   
-      stream.end(archivo.buffer);
+      stream.end(file.buffer);
 
 }
 
