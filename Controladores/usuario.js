@@ -328,7 +328,8 @@ const subirArchivo = (req, res) =>{
                 status:"Succes",
                 mensaje:"Archivo subido",
                 usuario: usuario,
-                files: req.file
+                publicUrl
+            
             })
         })
   
