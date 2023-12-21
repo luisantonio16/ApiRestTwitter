@@ -8,6 +8,7 @@ const seguidoServicios = require("../servicios/seguidoUserId")
 const Siguiendo = require('../modelos/follow');
 const publicacion = require('../modelos/publicacion');
 const {  bucket } = require('../firebase/firebaseUpluoad.js');
+const { log } = require('console');
 
 
 const pruebaUser = (req,res)=>{
@@ -289,9 +290,17 @@ const subirArchivo = (req, res) =>{
       },
     });
 
+    console.log(fileUpload);
+    console.log(fileName);
+
     stream.on('error', (err) => {
         console.error('Error al subir la imagen a Firebase Storage:', err);
-        res.status(405).send('Error al subir la imagen.');
+        res.status(405).send(
+            {
+                status:'Error',
+                mensaje:`Error al subir la imagen ${err}`,
+            }
+        );
       });
 
     //comprabamos la extension de la imagen
@@ -311,7 +320,7 @@ const subirArchivo = (req, res) =>{
 
     stream.on('finish', async () => {
         // URL de acceso público de la imagen en Firebase Storage
-        const publicUrl = `https://storage.googleapis.com/${fileUpload.name}`;
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`;
 
 
         let id = req.usuario.id
