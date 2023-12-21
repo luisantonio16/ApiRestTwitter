@@ -5,6 +5,7 @@ const auth = require("../Midelware/auth")
 const multer = require("multer")
 
 const app = express();
+
 //configuramos el multer para subir archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
