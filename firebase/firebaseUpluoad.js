@@ -1,15 +1,13 @@
-const express = require('express');
 const multer = require('multer');
 const admin = require('firebase-admin');
-const path = require('path');
-const serviceAccount = require('../firebase/firebaseConfig')
+//const serviceAccount = require('../firebase/firebaseConfig')
 
-const confing = serviceAccount.serviceAccount; // Ruta al archivo de clave de servicio de Firebase
+const serviceAccount = require('./path/to/serviceAccountKey.json'); // Ruta al archivo de clave de servicio de Firebase
 
 
 // Configuración de Firebase
 admin.initializeApp({
-  credential: admin.credential.cert(confing),
+  credential: admin.credential.cert(serviceAccount),
   storageBucket: process.env.storageBucket, // Reemplaza con el ID de tu aplicación
 });
 
