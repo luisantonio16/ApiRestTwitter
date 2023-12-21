@@ -7,7 +7,7 @@ const path = require('path');
 const seguidoServicios = require("../servicios/seguidoUserId")
 const Siguiendo = require('../modelos/follow');
 const publicacion = require('../modelos/publicacion');
-const { upload, bucket } = require('../firebase/firebaseUpluoad');
+const {  bucket } = require('../firebase/firebaseUpluoad.js');
 
 
 const pruebaUser = (req,res)=>{
