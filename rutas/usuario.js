@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const UsuarioControlador = require("../Controladores/usuario");
 const auth = require("../Midelware/auth");
-import { upload } from "../firebase/firebaseUpluoad.js";
+const  upload = require( "../firebase/firebaseUpluoad.js");
 
 
 
