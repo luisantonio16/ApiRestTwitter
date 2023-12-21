@@ -7,6 +7,8 @@ const path = require('path');
 const seguidoServicios = require("../servicios/seguidoUserId")
 const Siguiendo = require('../modelos/follow');
 const publicacion = require('../modelos/publicacion');
+const { upload, bucket } = require('../firebase/firebaseUpluoad');
+
 
 const pruebaUser = (req,res)=>{
     return res.status(200).send({
@@ -274,13 +276,25 @@ const subirArchivo = (req, res) =>{
     }
 
     //recoger el nombre de la imagen
-    const nombre = archivo.originalname;
+    //const nombre = archivo.originalname;
     //sacamos la extencion del archivo
-    const nombreSplit = nombre.split("\.");
+    const fileName = 'Avatar' + '-' + archivo.originalname;
+    const fileUpload = bucket.file(fileName);
 
-    const extencion = nombreSplit[1]
+    // Subir la imagen a Firebase Storage
+    const stream = fileUpload.createWriteStream({
+      metadata: {
+        contentType: file.mimetype,
+      },
+    });
+
+    stream.on('error', (err) => {
+        console.error('Error al subir la imagen a Firebase Storage:', err);
+        res.status(500).send('Error al subir la imagen.');
+      });
+
     //comprabamos la extension de la imagen
-    if(extencion != "png" && extencion != "jpg" && extencion != "jpeg" && extencion != "gif"){
+   /*  if(extencion != "png" && extencion != "jpg" && extencion != "jpeg" && extencion != "gif"){
         //borrar archivo subido
         const filepath = req.file.path
         const fileDelete = fs.unlinkSync(filepath);
@@ -292,30 +306,38 @@ const subirArchivo = (req, res) =>{
         })
     }
 
+ */
 
-    //sacams el id del inicio de seccion
-    let id = req.usuario.id
-    //guardamos la imagen en la base de datos
-    Usuario.findOneAndUpdate({_id:id}, { imagen:req.file.filename}, {new:true}).then(async function(usuario){
+    stream.on('finish', async () => {
+        // URL de acceso público de la imagen en Firebase Storage
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`;
 
 
-        
-        if(!usuario){
-            return res.status(500).send({
-                status:"Error",
-                mensaje:"No se pudo actualizar el avatar"
+        let id = req.usuario.id
+        //guardamos la imagen en la base de datos
+        Usuario.findOneAndUpdate({_id:id}, { imagen:publicUrl}, {new:true}).then(async function(usuario){
+            if(!usuario){
+                return res.status(500).send({
+                    status:"Error",
+                    mensaje:"No se pudo actualizar el avatar"
+                })
+            }
+    
+            res.status(200).send({
+                status:"Succes",
+                mensaje:"Archivo subido",
+                usuario: usuario,
+                files: req.file
             })
-        }
-
-        res.status(200).send({
-            status:"Succes",
-            mensaje:"Archivo subido",
-            usuario: usuario,
-            files: req.file
         })
-    })
+  
+        // Guardar la URL en MongoDB
+  
+        res.status(200).send(`Imagen subida exitosamente. URL: ${publicUrl}`);
+      });
+  
+      stream.end(file.buffer);
 
- 
 }
 
 const avatar = (req,res) =>{
