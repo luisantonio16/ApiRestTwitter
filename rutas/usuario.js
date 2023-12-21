@@ -1,12 +1,32 @@
 const express = require("express");
 const router = express.Router();
 const UsuarioControlador = require("../Controladores/usuario");
-const auth = require("../Midelware/auth")
-const multer = require("multer")
+const auth = require("../Midelware/auth");
+const multer = require("multer");
+const path = require('path');
+const admin = require('firebase-admin')
+const serviceAccount = require('../firebase/firebaseConfig')
+
+
+
+const confing = serviceAccount;
+
+// Configuración de Firebase
+admin.initializeApp({
+    credential: admin.credential.cert(confing),
+    storageBucket: process.env.storageBucket, // Reemplaza con el ID de tu aplicación
+});
+
+
+const bucket = admin.storage().bucket();
+
+// Configuración de Multer
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const app = express();
 //configuramos el multer para subir archivos
-const storage = multer.diskStorage({
+ const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./archivos/avatars");
 
@@ -16,7 +36,7 @@ const storage = multer.diskStorage({
 
     }
 })
-
+ 
 
 
 const subirarchivo = multer({storage})
