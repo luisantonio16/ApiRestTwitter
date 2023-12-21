@@ -1,8 +1,8 @@
 const multer = require('multer');
 const admin = require('firebase-admin');
-const serviceAccount = require('../firebase/firebaseConfig')
 
-const servicesAccount = serviceAccount; // Ruta al archivo de clave de servicio de Firebase
+
+const servicesAccount = require('./servicesAccount.json'); // Ruta al archivo de clave de servicio de Firebase
 
 
 // Configuración de Firebase
