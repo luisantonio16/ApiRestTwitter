@@ -279,7 +279,7 @@ const subirArchivo = (req, res) =>{
     //recoger el nombre de la imagen
     //const nombre = archivo.originalname;
     //sacamos la extencion del archivo
-    const fileName = 'Avatar' + '--' + file.originalname;
+    const fileName = 'Avatar' + '-' + file.originalname;
     const fileUpload = bucket.file(fileName);
 
     // Subir la imagen a Firebase Storage
@@ -311,12 +311,12 @@ const subirArchivo = (req, res) =>{
 
     stream.on('finish', async () => {
         // URL de acceso público de la imagen en Firebase Storage
-        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`;
+        const publicUrl = `https://storage.googleapis.com/${fileUpload.name}`;
 
 
         let id = req.usuario.id
         //guardamos la imagen en la base de datos
-        Usuario.findOneAndUpdate({_id:id}, {imagen:publicUrl}, {new:true}).then(async function(usuario){
+        await  Usuario.findOneAndUpdate({_id:id}, {imagen:req.file.filename}, {new:true}).then(async function(usuario){
             if(!usuario){
                 return res.status(500).send({
                     status:"Error",
