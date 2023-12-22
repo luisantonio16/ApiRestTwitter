@@ -284,7 +284,7 @@ const subirArchivo = (req, res) =>{
 
     const storageRef = ref(storage, `Avatares/${fileName}`);
 
-    uploadBytes(storageRef, fileName).then((snapshot) => {
+    uploadBytes(storageRef, req.file).then((snapshot) => {
         console.log('Uploaded a blob or file!'+ snapshot);
       });
    
