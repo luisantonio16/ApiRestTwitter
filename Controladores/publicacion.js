@@ -132,8 +132,8 @@ const subirArchivo = (req,res)=>{
 
 
      //recojer el fichro de la imagen y comprobar si existe
-     const archivo = req.file;
-     if(!archivo){
+     const file = req.file;
+     if(!file){
          return res.status(400).json({
              status:"Error",
              mensaje:"No se ha subido ningun archivo",
