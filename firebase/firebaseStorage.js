@@ -1,16 +1,16 @@
 const firebase = require("firebase/app");
 const multer = require('multer');
-const {getStorage, ref} = require('firebase/storage');
+const {getStorage} = require('firebase/storage');
 
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: process.env.apiKey,
-  authDomain: process.env.authDomain,
-  projectId: process.env.projectId,
-  storageBucket: process.env.storageBucket,
-  messagingSenderId: process.env.messagingSenderId,
-  appId: process.env.appId
+  apiKey: "AIzaSyChvqoBV75rrhb4rLvLzqC255TuvZz1L4w",
+  authDomain: "hoodiee-dade7.firebaseapp.com",
+  projectId: "hoodiee-dade7",
+  storageBucket: "gs://hoodiee-dade7.appspot.com",
+  messagingSenderId: "161077426262",
+  appId: "1:161077426262:web:13aec553cba3de848a23f7"
 };
 
 // Initialize Firebase
