@@ -5,6 +5,8 @@ const seguidoServicios = require("../servicios/seguidoUserId")
 //importar modulos
 const fs = require("fs");
 const path = require('path');
+const {  storage } = require('../firebase/firebaseStorage.js');
+const { ref, uploadBytes, getDownloadURL} = require('firebase/storage');
 
 
 
@@ -138,7 +140,7 @@ const subirArchivo = (req,res)=>{
          })
      }
  
-     //recoger el nombre de la imagen
+   /*   //recoger el nombre de la imagen
      const nombre = archivo.originalname;
      //sacamos la extencion del archivo
      const nombreSplit = nombre.split("\.");
@@ -155,28 +157,43 @@ const subirArchivo = (req,res)=>{
              status:"Error",
              mensaje:"Este archivo no se puede subir, intente con otro."
          })
-     }
+     } */
  
+     
+    //recoger el nombre de la imagen
+    const fileName = 'Pub' + '-' + file.originalname;
+
+    const storageRef = ref(storage, `Publicaciion/${fileName}`);
  
-     //sacams el id del inicio de seccion
-     let id = req.usuario.id
-     //guardamos la imagen en la base de datos
-     Publicacion.findOneAndUpdate({usuario:id, _id:publicacionId}, { archivo:req.file.filename}, {new:true}).then(function(publicacion){
+
+
+    //guardamos la imagen en firebase
+    uploadBytes(storageRef, req.file.buffer).then(async (snapshot) => {
+
+        const url = await getDownloadURL(storageRef);
+          //sacams el id del inicio de seccion
+        let id = req.usuario.id
+        //guardamos la imagen en la base de datos
+        Publicacion.findOneAndUpdate({usuario:id, _id:publicacionId}, { archivo:url}, {new:true}).then(function(publicacion){
          
-         if(!usuario){
-             return res.status(500).send({
-                 status:"Error",
-                 mensaje:"No se pudo actualizar el avatar"
-             })
-         }
- 
-         res.status(200).send({
-             status:"Succes",
-             mensaje:"Archivo subido",
-             publicacion: publicacion,
-             files: req.file
-         })
-     })
+            if(!usuario){
+                return res.status(500).send({
+                    status:"Error",
+                    mensaje:"No se pudo actualizar el avatar"
+                })
+            }
+    
+                res.status(200).send({
+                    status:"Succes",
+                    mensaje:"Archivo subido",
+                    publicacion: publicacion,
+                })
+            })
+                
+       
+   
+      });
+   
 }
 
 //subir media
