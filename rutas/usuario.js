@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const UsuarioControlador = require("../Controladores/usuario");
 const auth = require("../Midelware/auth");
-const  {upload} = require( "../firebase/firebaseStorage");
+const  {upload} = require( "../firebase/firebaseStorage.js");
 
 
 
