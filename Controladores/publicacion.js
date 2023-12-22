@@ -126,7 +126,7 @@ const listarPublicacion = (req,res)=>{
 }
 
 //subir archivos
-const subirArchivo = (req,res)=>{
+const subirArchivo = async (req,res)=>{
     //sacar id del parametro
     const publicacionId = req.params.id;
 
@@ -168,13 +168,13 @@ const subirArchivo = (req,res)=>{
 
 
     //guardamos la imagen en firebase
-    uploadBytes(storageRef, req.file.buffer).then(async (snapshot) => {
+   await uploadBytes(storageRef, req.file.buffer).then(async (snapshot) => {
 
         const url = await getDownloadURL(storageRef);
           //sacams el id del inicio de seccion
         let id = req.usuario.id
         //guardamos la imagen en la base de datos
-        Publicacion.findOneAndUpdate({usuario:id, _id:publicacionId}, { archivo:url}, {new:true}).then(function(publicacion){
+       await Publicacion.findOneAndUpdate({usuario:id, _id:publicacionId}, { archivo:url}, {new:true}).then(function(publicacion){
          
             if(!usuario){
                 return res.status(500).send({

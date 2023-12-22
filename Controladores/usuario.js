@@ -268,7 +268,7 @@ const udapteUsuarios =(req, res)=>{
    
 }
 
-const subirArchivo = (req, res) =>{
+const subirArchivo = async (req, res) =>{
 
     //recojer el fichro de la imagen y comprobar si existe
     const file = req.file;
@@ -284,13 +284,13 @@ const subirArchivo = (req, res) =>{
 
     const storageRef = ref(storage, `Avatares/${fileName}`);
 
-    uploadBytes(storageRef, req.file.buffer).then(async (snapshot) => {
+    await uploadBytes(storageRef, req.file.buffer).then(async (snapshot) => {
 
         const url = await getDownloadURL(storageRef);
         
         let id = req.usuario.id
         //guardamos la imagen en la base de datos
-        Usuario.findOneAndUpdate({_id:id}, {imagen:url}, {new:true}).then(async function(usuario){
+       await Usuario.findOneAndUpdate({_id:id}, {imagen:url}, {new:true}).then(async function(usuario){
             if(!usuario){
                 return res.status(500).send({
                     status:"Error",
