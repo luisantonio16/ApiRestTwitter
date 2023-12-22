@@ -1,5 +1,5 @@
 const Usuario = require('../modelos/usuario');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcryptjs');
 const jwt = require("../servicios/jwt")
 const paginate = require('mongoose-paginate-v2')
 const fs = require("fs");
