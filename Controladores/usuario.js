@@ -8,7 +8,7 @@ const seguidoServicios = require("../servicios/seguidoUserId")
 const Siguiendo = require('../modelos/follow');
 const publicacion = require('../modelos/publicacion');
 const {  storage } = require('../firebase/firebaseStorage');
-const { ref, uploadBytes} = require('firebase/storage');
+const { ref, uploadBytes, getDownloadURL} = require('firebase/storage');
 
 
 
@@ -284,8 +284,31 @@ const subirArchivo = (req, res) =>{
 
     const storageRef = ref(storage, `Avatares/${fileName}`);
 
-    uploadBytes(storageRef, req.file).then((snapshot) => {
+    uploadBytes(storageRef, req.file).then(async (snapshot) => {
         console.log('Uploaded a blob or file!'+ snapshot);
+
+        const url = await getDownloadURL(storageRef);
+        
+        let id = req.usuario.id
+        //guardamos la imagen en la base de datos
+        Usuario.findOneAndUpdate({_id:id}, {imagen:url}, {new:true}).then(async function(usuario){
+            if(!usuario){
+                return res.status(500).send({
+                    status:"Error",
+                    mensaje:"No se pudo actualizar el avatar"
+                })
+            }
+    
+            res.status(200).send({
+                status:"Succes",
+                mensaje:"Archivo subido",
+                usuario: usuario,
+                publicUrl
+            
+            })
+        })
+
+        
       });
    
 
@@ -304,24 +327,6 @@ const subirArchivo = (req, res) =>{
 
  */
 
-        let id = req.usuario.id
-        //guardamos la imagen en la base de datos
-        Usuario.findOneAndUpdate({_id:id}, {imagen:publicUrl}, {new:true}).then(async function(usuario){
-            if(!usuario){
-                return res.status(500).send({
-                    status:"Error",
-                    mensaje:"No se pudo actualizar el avatar"
-                })
-            }
-    
-            res.status(200).send({
-                status:"Succes",
-                mensaje:"Archivo subido",
-                usuario: usuario,
-                publicUrl
-            
-            })
-        })
   
   
 
