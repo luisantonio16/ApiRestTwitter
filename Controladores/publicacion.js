@@ -163,7 +163,7 @@ const subirArchivo = async (req,res)=>{
     //recoger el nombre de la imagen
     const fileName = 'Pub' + '-' + file.originalname;
 
-    const storageRef = ref(storage, `Publicaciion/${fileName}`);
+    const storageRef = ref(storage, `Publicacion/${fileName}`);
  
 
 
