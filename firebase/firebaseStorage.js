@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+const {initializeApp} = require("firebase/app");
 const multer = require('multer');
 const {getStorage, ref} = require('firebase/storage');
 
