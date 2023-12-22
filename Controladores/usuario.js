@@ -7,8 +7,10 @@ const path = require('path');
 const seguidoServicios = require("../servicios/seguidoUserId")
 const Siguiendo = require('../modelos/follow');
 const publicacion = require('../modelos/publicacion');
-const {  bucket } = require('../firebase/firebaseUpluoad.js');
-const { log } = require('console');
+const {  storage } = require('../firebase/firebaseStorage');
+const { ref, uploadBytes} = require('firebase/storage');
+
+
 
 
 const pruebaUser = (req,res)=>{
@@ -278,30 +280,14 @@ const subirArchivo = (req, res) =>{
     }
 
     //recoger el nombre de la imagen
-    //const nombre = archivo.originalname;
-    //sacamos la extencion del archivo
     const fileName = 'Avatar' + '-' + file.originalname;
-    const fileUpload = bucket.file(fileName);
 
-    // Subir la imagen a Firebase Storage
-    const stream = fileUpload.createWriteStream({
-      metadata: {
-        contentType: file.mimetype,
-      },
-    });
+    const storageRef = ref(storage, `Avatares/${fileName}`);
 
-    console.log(fileUpload);
-    console.log(fileName);
-
-    stream.on('error', (err) => {
-        console.error('Error al subir la imagen a Firebase Storage:', err);
-        res.status(405).send(
-            {
-                status:'Error',
-                mensaje:`Error al subir la imagen ${err}`,
-            }
-        );
+    uploadBytes(storageRef, fileName).then((snapshot) => {
+        console.log('Uploaded a blob or file!'+ snapshot);
       });
+   
 
     //comprabamos la extension de la imagen
    /*  if(extencion != "png" && extencion != "jpg" && extencion != "jpeg" && extencion != "gif"){
@@ -318,14 +304,9 @@ const subirArchivo = (req, res) =>{
 
  */
 
-    stream.on('finish', async () => {
-        // URL de acceso público de la imagen en Firebase Storage
-        const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`;
-
-
         let id = req.usuario.id
         //guardamos la imagen en la base de datos
-        await  Usuario.findOneAndUpdate({_id:id}, {imagen:publicUrl}, {new:true}).then(async function(usuario){
+        Usuario.findOneAndUpdate({_id:id}, {imagen:publicUrl}, {new:true}).then(async function(usuario){
             if(!usuario){
                 return res.status(500).send({
                     status:"Error",
@@ -342,9 +323,7 @@ const subirArchivo = (req, res) =>{
             })
         })
   
-      });
   
-      stream.end(file.buffer);
 
 }
 
