@@ -284,8 +284,7 @@ const subirArchivo = (req, res) =>{
 
     const storageRef = ref(storage, `Avatares/${fileName}`);
 
-    uploadBytes(storageRef, req.file).then(async (snapshot) => {
-        console.log('Uploaded a blob or file!'+ snapshot);
+    uploadBytes(storageRef, req.file.buffer).then(async (snapshot) => {
 
         const url = await getDownloadURL(storageRef);
         
@@ -303,41 +302,26 @@ const subirArchivo = (req, res) =>{
                 status:"Succes",
                 mensaje:"Archivo subido",
                 usuario: usuario,
-                publicUrl
+               
             
             })
         })
-
-        
+   
       });
    
-
-    //comprabamos la extension de la imagen
-   /*  if(extencion != "png" && extencion != "jpg" && extencion != "jpeg" && extencion != "gif"){
-        //borrar archivo subido
-        const filepath = req.file.path
-        const fileDelete = fs.unlinkSync(filepath);
-
-        //devolver respuesta
-        return res.status(400).send({
-            status:"Error",
-            mensaje:"Este archivo no se puede subir, intente con otro."
-        })
-    }
-
- */
-
-  
-  
 
 }
 
 const avatar = (req,res) =>{
     //sacar el parametro de la url
     const file = req.params.file;
+    const url = "hoodiee-dade7.appspot.com/Avatares/"+file;
+
 
     //montar un path real de la imagen
-    const filepath = "./archivos/avatars/"+file;
+    const filepath = `https://storage.googleapis.com/${ref.name}/${url}`;
+
+
 
     //comprbar si existe 
     fs.stat(filepath, (error, existe)=>{
@@ -347,6 +331,7 @@ const avatar = (req,res) =>{
                 mensaje:"No se encontro la imagen",
             })
         }
+        
         //deblvemos un file
         return res.sendFile(path.resolve(filepath))
     })
