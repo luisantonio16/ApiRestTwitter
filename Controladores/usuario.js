@@ -7,7 +7,7 @@ const path = require('path');
 const seguidoServicios = require("../servicios/seguidoUserId")
 const Siguiendo = require('../modelos/follow');
 const publicacion = require('../modelos/publicacion');
-const {  storage } = require('../firebase/firebaseStorage');
+const {  storage } = require('../firebase/firebaseStorage.js');
 const { ref, uploadBytes, getDownloadURL} = require('firebase/storage');
 
 
